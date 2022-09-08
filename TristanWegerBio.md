@@ -4,7 +4,7 @@
 - Cell: (937)-668-1660
 - LinkedIn: www.linkedin.com/in/tristan-a-weger-698890182
 
-## Co-Op and Personal Project Experience
+## Co-Op Work Experience
 - Electrical Engineering Assistant: American Battery Solutions,  Springboro, OH, (3 Semesters)
     -	Utilized MySQL and Excel Power Query for data collection and analysis of 12 large manufacturing operations
     -	Programmed Grafana interface to visualy represent data from SQL database
