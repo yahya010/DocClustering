@@ -1,5 +1,5 @@
-Tristan - Determine what kind of machine learning method to use (supervised, reinforcement, unsupervised, transfer, etc.)
-Tristan - Investigate how to partition data into training, validation and test subsets.
+# Tristan - Determine what kind of machine learning method to use (supervised, reinforcement, unsupervised, transfer, etc.)
+# Tristan - Investigate how to partition data into training, validation and test subsets.
 Tristan - Run the clustering algorithm using the different data subset partitions.
 Tristan - Select a cross validation method to get a more accurate rating of the performance of each model.
 Tristan - Interpret the clustering results and make adjustments if needed.
