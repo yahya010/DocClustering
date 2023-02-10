@@ -1,6 +1,7 @@
 import csv
 import string
 
+import matplotlib.pyplot as plt
 import nltk
 import pandas as pd
 import cleanlab
@@ -43,23 +44,46 @@ model = SentenceTransformer('sentence-transformers/all-mpnet-base-v1')
 
 
 unrelated_sent_map = []
-
+i = 1
 for speech in filteredTranscript[:NUM_SHORTEST_SPEECHES - 1] + \
               filteredTranscript[NUM_SHORTEST_SPEECHES + 1:NUM_SHORTEST_SPEECHES + 2]:
     embeddings = model.encode(speech)
 
     ood = OutOfDistribution()
     train_outlier_scores = ood.fit_score(features=embeddings)
-    top_train_outlier_idxs = train_outlier_scores.argsort()[:10]
+    top_train_outlier_idxs = train_outlier_scores.argsort()[:20]
+    print(sorted(train_outlier_scores)[0:20])
 
-    unrelated_sent_map.append((speech, [speech[topId] for topId in top_train_outlier_idxs]))
+    speech = [str(train_outlier_scores[i]) + ": " + sentence for i, sentence in enumerate(speech)]
+
+    unrelated_sent_map.append((speech, [speech[topId] for topId in top_train_outlier_idxs],
+                               [str(train_outlier_scores[topId]) for topId in top_train_outlier_idxs]))
+
+    # plot histogram
+    print(i)
+    i += 1
+    plt.hist(train_outlier_scores, bins=15, alpha=0.5, ec='black')
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.ylabel('Frequency', fontsize='16')
+    plt.title('Out of Distribution Scores', fontsize='20')
+    plt.show()
+
+    # gran plot
+    plt.bar(range(1, len(train_outlier_scores) + 1), sorted(train_outlier_scores, reverse=True), alpha=0.5)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.ylabel('Score', fontsize='16')
+    plt.title('Out of Distribution Scores', fontsize='20')
+    plt.show()
+
 
 # print(unrelated_sent_map[0])
 with open('Data_Output/Speech_Outlier_Data.txt', 'w') as outputFile:
     for i, sent_map in enumerate(unrelated_sent_map):
-        outputFile.write(str(i + 1) + ": " + ".".join(sent_map[0]) + "\n\n")
+        outputFile.write(str(i + 1) + ": " + " ".join(sent_map[0]) + "\n\n")
 
         for j, unrelated_sent in enumerate(sent_map[1]):
-            outputFile.write("{0}: {1}\n".format(j + 1, unrelated_sent))
+            outputFile.write("{0} {1}\n".format(j + 1, unrelated_sent))
 
         outputFile.write("\n\n\n")
