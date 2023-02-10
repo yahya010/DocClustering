@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/github/yahya010/DocClustering/blob/Ryan_Working/SeniorDesignCode_01_20_2023.ipynb
 """
 
-pip install -U sentence-transformers
+# pip install -U sentence-transformers
 
 import pandas as pd
 import csv
@@ -117,6 +117,9 @@ def kmeans(reduced_embedding, fullTranscripts):
     for i in cluster_labels:
         plt.scatter(reduced_embedding[label == i, 0], reduced_embedding[label == i, 1], label=i)
 
+    plt.xlabel('Dimension 1 Score')
+    plt.ylabel('Dimension 2 Score')
+    plt.title('KMeans Clustering Visualization')
     plt.legend()
     plt.show()
 
@@ -197,19 +200,19 @@ for i in range(len(reduced_embedding)):
 # Standardize the Data
 print(heatmap)
 
-ind = np.argpartition(heatmap[0,:], -10)[-10:]
-top4 = heatmap[0,ind]
-print(ind)
-print(top4)
-
-top5 = np.zeros(shape=(y, x))
-ind = np.argpartition(heatmap[0,:], -5)[-5:]
-top4 = heatmap[0,ind]
-print(ind)
-print(top4)
-top4 = pd.DataFrame(top4)
-top4.to_csv('top4.csv')
-for i in range
+# ind = np.argpartition(heatmap[0,:], -10)[-10:]
+# top4 = heatmap[0,ind]
+# print(ind)
+# print(top4)
+#
+# top5 = np.zeros(shape=(y, x))
+# ind = np.argpartition(heatmap[0,:], -5)[-5:]
+# top4 = heatmap[0,ind]
+# print(ind)
+# print(top4)
+# top4 = pd.DataFrame(top4)
+# top4.to_csv('top4.csv')
+# for i in range
 
 # Prenormalized Heatmaps
 
@@ -347,4 +350,4 @@ heatmapPostPCANormdf.to_csv('heatmapPostNorm.csv')
 filteredSentences = filter_Sentences(fullTranscripts, 6)
 
 # running KMeans
-# kmeans(reduced_embedding, fullTranscripts)
+kmeans(reduced_embedding, fullTranscripts)
