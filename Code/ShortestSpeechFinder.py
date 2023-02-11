@@ -9,7 +9,10 @@ from cleanlab.outlier import OutOfDistribution
 from nltk.corpus import stopwords
 from sentence_transformers import SentenceTransformer
 
-NUM_SHORTEST_SPEECHES = 7
+# Static Variables
+NUM_SHORTEST_SPEECHES = 1
+MIN_SPEECH_SENTENCES = 80
+OUTLIER_COUNT = 20
 
 df = pd.read_csv("https://raw.githubusercontent.com/yahya010/DocClustering/main/Pres_Speeches/presidential_speeches.csv",
                  usecols=['President', 'Speech Title', 'Transcript'])
@@ -35,7 +38,7 @@ for val in df.values:
 
 speechLengthMap.sort(key=lambda x: x[2])
 # store speeches where there are at least 20 sentences
-filteredTranscript = [speech[1] for speech in speechLengthMap if speech[2] >= 30]
+filteredTranscript = [speech[1] for speech in speechLengthMap if speech[2] >= MIN_SPEECH_SENTENCES]
 
 # for i in range(NUM_SHORTEST_SPEECHES):
 #     print(speechLengthMap[i])
@@ -44,15 +47,12 @@ model = SentenceTransformer('sentence-transformers/all-mpnet-base-v1')
 
 
 unrelated_sent_map = []
-i = 1
-for speech in filteredTranscript[:NUM_SHORTEST_SPEECHES - 1] + \
-              filteredTranscript[NUM_SHORTEST_SPEECHES + 1:NUM_SHORTEST_SPEECHES + 2]:
+for speech in filteredTranscript[:NUM_SHORTEST_SPEECHES]:
     embeddings = model.encode(speech)
 
     ood = OutOfDistribution()
     train_outlier_scores = ood.fit_score(features=embeddings)
-    top_train_outlier_idxs = train_outlier_scores.argsort()[:20]
-    print(sorted(train_outlier_scores)[0:20])
+    top_train_outlier_idxs = train_outlier_scores.argsort()[:OUTLIER_COUNT]
 
     speech = [str(train_outlier_scores[i]) + ": " + sentence for i, sentence in enumerate(speech)]
 
@@ -60,22 +60,20 @@ for speech in filteredTranscript[:NUM_SHORTEST_SPEECHES - 1] + \
                                [str(train_outlier_scores[topId]) for topId in top_train_outlier_idxs]))
 
     # plot histogram
-    print(i)
-    i += 1
-    plt.hist(train_outlier_scores, bins=15, alpha=0.5, ec='black')
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
-    plt.ylabel('Frequency', fontsize='16')
-    plt.title('Out of Distribution Scores', fontsize='20')
-    plt.show()
-
-    # gran plot
-    plt.bar(range(1, len(train_outlier_scores) + 1), sorted(train_outlier_scores, reverse=True), alpha=0.5)
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
-    plt.ylabel('Score', fontsize='16')
-    plt.title('Out of Distribution Scores', fontsize='20')
-    plt.show()
+    # plt.hist(train_outlier_scores, bins=15, alpha=0.5, ec='black')
+    # plt.xticks(fontsize=12)
+    # plt.yticks(fontsize=12)
+    # plt.ylabel('Frequency', fontsize='16')
+    # plt.title('Out of Distribution Scores', fontsize='20')
+    # plt.show()
+    #
+    # # gran plot
+    # plt.bar(range(1, len(train_outlier_scores) + 1), sorted(train_outlier_scores, reverse=True), alpha=0.5)
+    # plt.xticks(fontsize=12)
+    # plt.yticks(fontsize=12)
+    # plt.ylabel('Score', fontsize='16')
+    # plt.title('Out of Distribution Scores', fontsize='20')
+    # plt.show()
 
 
 # print(unrelated_sent_map[0])
